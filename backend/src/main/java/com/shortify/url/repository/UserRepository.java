@@ -3,13 +3,10 @@ package com.shortify.url.repository;
 import com.shortify.url.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public class UserRepository extends JpaRepository<User, Long>{
-    public UserRepository() {
+import java.util.Optional;
 
-    }
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    public String findByUsername(String username) {
-        return findByUsername(username);
-    }
+    Optional<User> findByUsername(String username);
 
 }
