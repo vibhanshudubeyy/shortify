@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private JwtUtils jwtUtils;
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(
+                () -> new UsernameNotFoundException("Username " + username + " not found")
+        );
+    }
 
     @Override
     public User registerUser(User user) {
