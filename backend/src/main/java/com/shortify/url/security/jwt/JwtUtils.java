@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -20,7 +22,7 @@ public class JwtUtils {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("{jwt.expiration}")
+    @Value("${jwt.expiration}")
     private String jwtExpiration;
 
     // authorization -> Bearer <TOKEN>
@@ -36,17 +38,24 @@ public class JwtUtils {
 
     // generate token
     public String generateToken(UserDetails userDetails){
+        if (userDetails == null || userDetails.getUsername() == null) {
+            throw new IllegalArgumentException("UserDetails or username cannot be null");
+        }
         String username = userDetails.getUsername();
         String roles = userDetails.getAuthorities().stream()
                 .map(authority -> authority.getAuthority())
                 .collect(Collectors.joining(","));
 
+        long expirationSeconds = Long.parseLong(jwtExpiration);
+        Date expirationDate = new Date(System.currentTimeMillis() + expirationSeconds * 1000);
+
         return Jwts.builder().setSubject(username)
                 .claim("roles", roles)
                 .issuedAt(new Date())
-                .expiration(new Date((new Date().getTime() + jwtExpiration)))
+                .expiration(expirationDate)
                 .signWith(key())
                 .compact();
+
     }
 
     private Key key(){
