@@ -1,5 +1,6 @@
 package com.shortify.url.controller;
 
+import com.shortify.url.dtos.LoginRequest;
 import com.shortify.url.dtos.RegisterRequest;
 import com.shortify.url.models.User;
 import com.shortify.url.service.UserService;
@@ -16,6 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private UserService userService;
+
+    @PostMapping("public/login")
+    public ResponseEntity<?> loginUser(
+            @RequestBody LoginRequest loginRequest
+    ){
+        System.out.println("Login request received for: " + loginRequest.getUsername());
+        return ResponseEntity.ok(userService.authenticateUser(loginRequest));
+    }
 
     @PostMapping("/public/register")
     public ResponseEntity<?> registerUser(
